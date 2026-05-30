@@ -375,8 +375,14 @@ async function fetchFixtures() {
       for (const ev of (data.events || [])) {
         const comp = ev.competitions?.[0];
         if (!comp) continue;
-        const s = comp.status?.type?.name;
-        if (s === 'STATUS_FINAL' || s === 'STATUS_IN_PROGRESS') continue;
+        const s = comp.status?.type?.name || '';
+        const completed = comp.status?.type?.completed;
+        // Skip any game that is finished, in progress, or has a clock running
+        if (completed) continue;
+        if (s.includes('FINAL') || s.includes('IN_PROGRESS') || s.includes('HALF') || s.includes('END')) continue;
+        // Skip if game date is in the past
+        const gameTime = new Date(ev.date).getTime();
+        if (gameTime < Date.now()) continue;
         const teams = comp.competitors || [];
         const home = teams.find(t => t.homeAway === 'home');
         const away = teams.find(t => t.homeAway === 'away');
