@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BetIQ — Smart Bet Predictor</title>
+<title>BetIQ AI — Smart Bet Predictor</title>
 <style>
 :root {
   --bg: #07090f;
@@ -13,6 +13,7 @@
   --green: #00e676;
   --yellow: #ffd600;
   --red: #ff5252;
+  --purple: #b388ff;
   --text: #dde4f0;
   --muted: #5a6a85;
   --border: #1a2540;
@@ -29,56 +30,92 @@ header {
 }
 .logo { font-size: 1.5rem; font-weight: 900; color: var(--accent); }
 .logo span { color: #fff; }
+.logo sub { font-size: 0.6rem; color: var(--purple); font-weight: 700; letter-spacing: 2px; vertical-align: super; }
 .badge {
   display: flex; align-items: center; gap: 6px;
-  background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.2);
-  padding: 5px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; color: var(--green);
+  background: rgba(179,136,255,0.1); border: 1px solid rgba(179,136,255,0.3);
+  padding: 5px 12px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; color: var(--purple);
 }
-.dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: bl 1.4s ease-in-out infinite; }
+.dot { width: 6px; height: 6px; background: var(--purple); border-radius: 50%; animation: bl 1.4s ease-in-out infinite; }
 @keyframes bl { 0%,100%{opacity:1}50%{opacity:0.3} }
 
-.main { max-width: 1080px; margin: 0 auto; padding: 26px 16px 60px; }
+.main { max-width: 1100px; margin: 0 auto; padding: 26px 16px 80px; }
 
+/* SETUP */
 .setup { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
 .setup-title { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 14px; font-weight: 700; }
-.key-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.key-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: flex-end; }
 @media(max-width:600px){ .key-row { grid-template-columns: 1fr; } }
 .key-block label { font-size: 0.74rem; color: var(--muted); font-weight: 600; display: block; margin-bottom: 5px; }
-input[type=password], input[type=text], input[type=number] {
+input[type=password], input[type=text], input[type=number], select {
   width: 100%; background: var(--bg); border: 1px solid var(--border);
   color: var(--text); padding: 10px 13px; border-radius: 9px; font-size: 0.86rem;
   outline: none; transition: border .2s;
 }
-input:focus { border-color: var(--accent); }
+input:focus, select:focus { border-color: var(--accent); }
 .btn {
-  background: var(--accent); color: #000; font-weight: 800; font-size: 0.9rem;
-  padding: 11px 22px; border: none; border-radius: 9px; cursor: pointer; transition: opacity .2s;
+  background: linear-gradient(135deg, #00d4ff, #b388ff);
+  color: #000; font-weight: 800; font-size: 0.9rem;
+  padding: 11px 26px; border: none; border-radius: 9px; cursor: pointer;
+  transition: opacity .2s; white-space: nowrap;
 }
 .btn:hover { opacity: 0.85; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-outline {
   background: transparent; color: var(--accent); border: 1px solid var(--accent);
-  font-weight: 700; font-size: 0.86rem; padding: 9px 18px; border-radius: 9px; cursor: pointer;
+  font-weight: 700; font-size: 0.84rem; padding: 8px 16px; border-radius: 8px; cursor: pointer;
 }
-.btn-sm { padding: 7px 14px; font-size: 0.8rem; }
 
+/* CONTROLS */
 .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-bottom: 20px; }
-.ctrl-group { display: flex; flex-direction: column; gap: 4px; }
-.ctrl-group label { font-size: 0.7rem; color: var(--muted); font-weight: 600; text-transform: uppercase; }
-select {
-  background: var(--card); border: 1px solid var(--border); color: var(--text);
-  padding: 8px 12px; border-radius: 8px; font-size: 0.84rem; outline: none;
-}
+.ctrl-group { display: flex; flex-direction: column; gap: 4px; min-width: 100px; }
+.ctrl-group label { font-size: 0.69rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; }
 
+/* STATUS */
 .status { padding: 14px 18px; border-radius: 10px; margin-bottom: 16px; font-size: 0.86rem; font-weight: 600; }
 .status.info { background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2); color: var(--accent); }
 .status.error { background: rgba(255,82,82,0.08); border: 1px solid rgba(255,82,82,0.2); color: var(--red); }
 .status.ok { background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.2); color: var(--green); }
+.status.loading { background: rgba(179,136,255,0.08); border: 1px solid rgba(179,136,255,0.2); color: var(--purple); }
 
-.picks-grid { display: grid; gap: 14px; }
+/* THINKING */
+.thinking {
+  display: flex; align-items: center; gap: 10px;
+  padding: 18px 22px; background: rgba(179,136,255,0.06);
+  border: 1px solid rgba(179,136,255,0.2); border-radius: 12px;
+  margin-bottom: 20px; font-size: 0.9rem; color: var(--purple);
+}
+.thinking-dots span {
+  display: inline-block; width: 6px; height: 6px; background: var(--purple);
+  border-radius: 50%; margin: 0 2px;
+  animation: bounce 1.2s ease-in-out infinite;
+}
+.thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+.thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)} }
+
+/* TABS */
+.tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+.tab {
+  padding: 9px 20px; border-radius: 9px; cursor: pointer; font-weight: 700; font-size: 0.84rem;
+  border: 1px solid var(--border); background: var(--card); color: var(--muted); transition: all .2s;
+}
+.tab.active { background: rgba(0,212,255,0.1); border-color: var(--accent); color: var(--accent); }
+
+/* SECTION TITLE */
+.section-title {
+  font-size: 0.72rem; color: var(--muted); text-transform: uppercase;
+  letter-spacing: 1.2px; font-weight: 700; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* PICK CARDS */
+.picks-grid { display: grid; gap: 14px; margin-bottom: 28px; }
 
 .pick-card {
   background: var(--card); border: 1px solid var(--border); border-radius: 14px;
-  padding: 18px 20px; cursor: pointer; transition: border-color .2s;
+  padding: 18px 20px; cursor: pointer; transition: border-color .2s, transform .1s;
   position: relative; overflow: hidden;
 }
 .pick-card::before {
@@ -87,528 +124,474 @@ select {
 }
 .pick-card.med::before { background: var(--yellow); }
 .pick-card.low::before { background: var(--red); }
-.pick-card:hover { border-color: var(--accent); }
+.pick-card:hover { border-color: rgba(0,212,255,0.4); transform: translateY(-1px); }
 
 .pick-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-.pick-left { flex: 1; }
-.pick-sport { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 4px; }
-.pick-match { font-size: 1.05rem; font-weight: 800; }
-.pick-sel { font-size: 0.88rem; color: var(--accent); margin-top: 4px; }
+.pick-left { flex: 1; min-width: 0; }
+.pick-sport { font-size: 0.67rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 3px; }
+.pick-match { font-size: 1rem; font-weight: 800; }
+.pick-market { font-size: 0.8rem; color: var(--accent); margin-top: 4px; font-weight: 600; }
+.pick-reason { font-size: 0.78rem; color: var(--muted); margin-top: 6px; line-height: 1.5; }
 .pick-right { text-align: right; flex-shrink: 0; }
-.conf-ring {
-  font-size: 1.6rem; font-weight: 900; line-height: 1;
-}
-.conf-ring.high { color: var(--green); }
-.conf-ring.med { color: var(--yellow); }
-.conf-ring.low { color: var(--red); }
-.odds-tag {
+.conf-pct { font-size: 1.7rem; font-weight: 900; line-height: 1; }
+.conf-pct.high { color: var(--green); }
+.conf-pct.med { color: var(--yellow); }
+.conf-pct.low { color: var(--red); }
+.conf-label { font-size: 0.65rem; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+.odds-badge {
   display: inline-block; background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.25);
-  color: var(--accent); font-size: 0.8rem; font-weight: 800; padding: 3px 9px; border-radius: 6px; margin-top: 6px;
+  color: var(--accent); font-size: 0.8rem; font-weight: 800; padding: 3px 10px;
+  border-radius: 6px; margin-top: 6px;
 }
-.pick-detail { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); display: none; }
-.pick-detail.open { display: block; }
-.detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
-.detail-item { background: var(--card2); border-radius: 8px; padding: 10px 12px; }
-.detail-item .d-label { font-size: 0.68rem; color: var(--muted); font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
-.detail-item .d-val { font-size: 0.95rem; font-weight: 700; }
+.market-tag {
+  display: inline-block; background: rgba(179,136,255,0.1); border: 1px solid rgba(179,136,255,0.25);
+  color: var(--purple); font-size: 0.68rem; font-weight: 700; padding: 2px 8px;
+  border-radius: 5px; margin-right: 5px; margin-top: 4px;
+}
 
-/* PARLAY */
-.parlay-box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 20px 22px; margin-bottom: 20px; }
-.parlay-title { font-size: 0.8rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 14px; }
-.parlay-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; margin-bottom: 12px; }
-.parlay-legs { display: grid; gap: 8px; margin-top: 14px; }
+/* PARLAY CARD */
+.parlay-card {
+  background: var(--card); border: 1px solid rgba(0,230,118,0.25); border-radius: 14px;
+  padding: 20px 22px; margin-bottom: 14px;
+}
+.parlay-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border);
+}
+.parlay-name { font-size: 0.9rem; font-weight: 800; }
+.parlay-meta { display: flex; gap: 14px; align-items: center; }
+.parlay-odds { font-size: 1.4rem; font-weight: 900; color: var(--green); }
+.parlay-conf { font-size: 0.82rem; color: var(--muted); }
+.parlay-legs { display: grid; gap: 8px; }
 .parlay-leg {
   background: var(--card2); border-radius: 8px; padding: 10px 14px;
-  display: flex; justify-content: space-between; align-items: center;
+  display: flex; justify-content: space-between; align-items: center; gap: 10px;
 }
-.leg-match { font-size: 0.9rem; font-weight: 700; }
-.leg-sel { font-size: 0.78rem; color: var(--accent); }
-.leg-odds { font-size: 0.88rem; font-weight: 800; color: var(--yellow); margin-left: 10px; }
-.parlay-total {
-  margin-top: 14px; padding: 14px; background: rgba(0,230,118,0.06);
-  border: 1px solid rgba(0,230,118,0.2); border-radius: 10px;
-  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
-}
-.pt-label { font-size: 0.74rem; color: var(--muted); font-weight: 600; text-transform: uppercase; }
-.pt-val { font-size: 1.15rem; font-weight: 900; color: var(--green); }
+.leg-info { flex: 1; min-width: 0; }
+.leg-match { font-size: 0.86rem; font-weight: 700; }
+.leg-market { font-size: 0.75rem; color: var(--accent); }
+.leg-odds-val { font-size: 0.9rem; font-weight: 800; color: var(--yellow); flex-shrink: 0; }
 
-.empty { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 0.95rem; }
+.parlay-footer {
+  margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);
+  font-size: 0.78rem; color: var(--muted); font-style: italic; line-height: 1.5;
+}
+
+.empty { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 0.9rem; }
+
+/* STAKE NOTE */
+.stake-note {
+  background: rgba(0,230,118,0.05); border: 1px solid rgba(0,230,118,0.15);
+  border-radius: 10px; padding: 12px 16px; margin-bottom: 20px;
+  font-size: 0.8rem; color: var(--muted);
+}
+.stake-note strong { color: var(--green); }
+
+/* TARGET ODDS INPUT */
+.target-row {
+  background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+  padding: 16px 20px; margin-bottom: 20px;
+  display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end;
+}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">Bet<span>IQ</span></div>
-  <div class="badge"><div class="dot"></div>LIVE DATA</div>
+  <div class="logo">Bet<span>IQ</span><sub>AI</sub></div>
+  <div class="badge"><div class="dot"></div>POWERED BY CLAUDE AI</div>
 </header>
 
 <div class="main">
 
   <!-- SETUP -->
   <div class="setup">
-    <div class="setup-title">⚙ API Keys</div>
+    <div class="setup-title">⚙ Setup — One Time</div>
     <div class="key-row">
       <div class="key-block">
-        <label>The Odds API Key <span style="color:var(--red)">*required</span></label>
-        <input type="password" id="oddsKey" placeholder="Paste your key…">
+        <label>Anthropic API Key (Claude AI) <span style="color:var(--red)">*required</span> — get free at <a href="https://console.anthropic.com" target="_blank" style="color:var(--accent)">console.anthropic.com</a></label>
+        <input type="password" id="claudeKey" placeholder="sk-ant-…">
       </div>
-      <div class="key-block">
-        <label>API-Football / RapidAPI Key <span style="color:var(--muted)">(optional – soccer history)</span></label>
-        <input type="password" id="fbKey" placeholder="Optional…">
-      </div>
+      <button class="btn" id="analyzeBtn" onclick="runAnalysis()">🤖 Analyze & Get Picks</button>
     </div>
-    <button class="btn" onclick="loadLive()">⚡ Load Live Picks</button>
-    <span style="font-size:0.75rem;color:var(--muted);margin-left:14px;">Keys auto-saved in browser</span>
+    <div style="margin-top:10px;font-size:0.75rem;color:var(--muted)">Key saved in browser · Each analysis costs ~$0.02 · Works for all sports · No other APIs needed</div>
   </div>
 
-  <!-- CONTROLS -->
-  <div class="controls">
+  <!-- TARGET ODDS -->
+  <div class="target-row">
     <div class="ctrl-group">
-      <label>Sport</label>
-      <select id="filterSport" onchange="render()">
+      <label>Target Odds</label>
+      <input type="number" id="targetOdds" value="2.00" min="1.2" max="100" step="0.1" style="width:100px">
+    </div>
+    <div class="ctrl-group">
+      <label>Sport Focus</label>
+      <select id="sportFocus">
         <option value="all">All Sports</option>
+        <option value="soccer">Soccer</option>
         <option value="basketball">NBA</option>
         <option value="baseball">MLB</option>
         <option value="tennis">Tennis</option>
-        <option value="soccer">Soccer</option>
       </select>
     </div>
     <div class="ctrl-group">
-      <label>Min Odds</label>
-      <input type="number" id="minOdds" value="1.50" min="1.01" max="10" step="0.05" style="width:90px" onchange="render()">
-    </div>
-    <div class="ctrl-group">
-      <label>Max Odds</label>
-      <input type="number" id="maxOdds" value="2.00" min="1.01" max="50" step="0.05" style="width:90px" onchange="render()">
-    </div>
-    <div class="ctrl-group">
       <label>Min Confidence</label>
-      <input type="number" id="minConf" value="70" min="0" max="99" step="5" style="width:90px" onchange="render()">
+      <select id="minConf">
+        <option value="60">60%+</option>
+        <option value="70" selected>70%+</option>
+        <option value="75">75%+</option>
+        <option value="80">80%+</option>
+      </select>
     </div>
-    <button class="btn-outline btn-sm" onclick="render()">Filter</button>
+    <div style="font-size:0.78rem;color:var(--muted);flex:1;align-self:center">
+      AI will find singles at your target odds AND build parlays that combine to reach your target.
+    </div>
   </div>
 
   <!-- STATUS -->
   <div id="statusBox" style="display:none"></div>
-
-  <!-- TARGET PARLAY BUILDER -->
-  <div class="parlay-box">
-    <div class="parlay-title">🎯 Target Parlay Builder</div>
-    <div class="parlay-row">
-      <div class="ctrl-group">
-        <label>Target Total Odds</label>
-        <input type="number" id="targetOdds" value="5.00" min="1.5" max="200" step="0.5" style="width:110px">
-      </div>
-      <div class="ctrl-group">
-        <label>Max Legs</label>
-        <input type="number" id="maxLegs" value="4" min="2" max="10" step="1" style="width:80px">
-      </div>
-      <button class="btn btn-sm" onclick="buildTarget()">Build Parlay</button>
-    </div>
-    <div id="parlayResult"></div>
+  <div id="thinkingBox" style="display:none" class="thinking">
+    <div class="thinking-dots"><span></span><span></span><span></span></div>
+    <div id="thinkingMsg">Claude AI is analyzing today's fixtures…</div>
   </div>
 
-  <!-- PICKS -->
-  <div id="picks"></div>
+  <!-- STAKE NOTE -->
+  <div class="stake-note" id="stakeNote" style="display:none">
+    <strong>Stake Markets Analyzed:</strong> Match Winner · Both Teams to Score · Over/Under 2.5 Goals · Asian Handicap · Double Chance · Draw No Bet · First Half Winner
+  </div>
+
+  <!-- RESULTS TABS -->
+  <div id="resultsTabs" style="display:none">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('singles')">🎯 Singles</div>
+      <div class="tab" onclick="switchTab('parlays')">⚡ Parlays</div>
+    </div>
+
+    <div id="singlesPanel">
+      <div class="section-title">Best Single Bets</div>
+      <div class="picks-grid" id="singlesGrid"></div>
+    </div>
+
+    <div id="parlaysPanel" style="display:none">
+      <div class="section-title">Parlay Combinations</div>
+      <div id="parlaysGrid"></div>
+    </div>
+  </div>
+
+  <div id="emptyState" class="empty" style="display:none">
+    No picks found matching your filters. Try lowering confidence or changing sport.
+  </div>
 
 </div>
 
 <script>
-const SPORTS = [
-  { key:'basketball_nba',          label:'NBA',              sport:'basketball', leagueId:null },
-  { key:'baseball_mlb',            label:'MLB',              sport:'baseball',   leagueId:null },
-  { key:'tennis_atp_french_open',  label:'ATP FRENCH OPEN',  sport:'tennis',     leagueId:null },
-  { key:'soccer_uefa_champs_league',label:'CHAMPIONS LEAGUE',sport:'soccer',     leagueId:2   },
-  { key:'soccer_epl',              label:'PREMIER LEAGUE',   sport:'soccer',     leagueId:39  },
-  { key:'soccer_spain_la_liga',    label:'LA LIGA',          sport:'soccer',     leagueId:140 },
-  { key:'soccer_germany_bundesliga',label:'BUNDESLIGA',      sport:'soccer',     leagueId:78  },
-  { key:'soccer_france_ligue_one', label:'LIGUE 1',          sport:'soccer',     leagueId:61  },
-  { key:'soccer_italy_serie_a',    label:'SERIE A',          sport:'soccer',     leagueId:135 },
-];
+// ─── State ───────────────────────────────────────────────────────────────────
+let lastResult = null;
 
-let allPicks = [];
-
-/* ── helpers ── */
-function setStatus(msg, type='info') {
+// ─── UI helpers ──────────────────────────────────────────────────────────────
+function setStatus(msg, type = 'info') {
   const b = document.getElementById('statusBox');
   b.className = 'status ' + type;
-  b.textContent = msg;
+  b.innerHTML = msg;
   b.style.display = 'block';
 }
-function clearStatus() { document.getElementById('statusBox').style.display='none'; }
-
-async function fetchTimeout(url, opts={}, ms=8000) {
-  const ctrl = new AbortController();
-  const id = setTimeout(()=>ctrl.abort(), ms);
-  try {
-    const r = await fetch(url, { ...opts, signal: ctrl.signal });
-    clearTimeout(id);
-    return r;
-  } catch(e) {
-    clearTimeout(id);
-    throw e;
-  }
+function hideStatus() { document.getElementById('statusBox').style.display = 'none'; }
+function setThinking(msg) {
+  document.getElementById('thinkingMsg').textContent = msg;
+  document.getElementById('thinkingBox').style.display = 'flex';
 }
+function hideThinking() { document.getElementById('thinkingBox').style.display = 'none'; }
 
-/* ── history: NBA via balldontlie ── */
-async function fetchNBA(teamName) {
-  try {
-    const q = encodeURIComponent(teamName.split(' ').pop());
-    const r = await fetchTimeout(`https://api.balldontlie.io/v1/teams?search=${q}`);
-    if (!r.ok) return null;
-    const d = await r.json();
-    if (!d.data?.length) return null;
-    const tid = d.data[0].id;
-    const g = await fetchTimeout(`https://api.balldontlie.io/v1/games?team_ids[]=${tid}&per_page=15&seasons[]=2024`);
-    if (!g.ok) return null;
-    const gd = await g.json();
-    return analyseGames(tid, gd.data || [], 'nba');
-  } catch { return null; }
-}
-
-/* ── history: MLB via official statsapi ── */
-async function fetchMLB(teamName) {
-  try {
-    const r = await fetchTimeout(`https://statsapi.mlb.com/api/v1/teams?sportId=1&season=2025`);
-    if (!r.ok) return null;
-    const d = await r.json();
-    const name = teamName.toLowerCase();
-    const team = (d.teams||[]).find(t =>
-      t.name.toLowerCase().includes(name.split(' ').pop()) ||
-      name.includes(t.teamCode?.toLowerCase())
-    );
-    if (!team) return null;
-    const sg = await fetchTimeout(`https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId=${team.id}&season=2025&gameType=R&hydrate=linescore`);
-    if (!sg.ok) return null;
-    const sd = await sg.json();
-    const games = [];
-    (sd.dates||[]).forEach(dt => (dt.games||[]).forEach(g => games.push(g)));
-    return analyseGames(team.id, games.slice(-15), 'mlb');
-  } catch { return null; }
-}
-
-/* ── history: Soccer via API-Football ── */
-async function fetchSoccer(apiKey, teamName, leagueId) {
-  if (!apiKey) return null;
-  try {
-    const ts = await fetchTimeout(`https://api-football-v1.p.rapidapi.com/v3/teams?name=${encodeURIComponent(teamName)}`, {
-      headers: { 'X-RapidAPI-Key': apiKey, 'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com' }
-    });
-    if (!ts.ok) return null;
-    const td = await ts.json();
-    const team = td.response?.[0]?.team;
-    if (!team) return null;
-    const fs = await fetchTimeout(
-      `https://api-football-v1.p.rapidapi.com/v3/fixtures?team=${team.id}&last=10&league=${leagueId}&season=2024`, {
-      headers: { 'X-RapidAPI-Key': apiKey, 'X-RapidAPI-Host': 'api-football-v1.p.rapidapi.com' }
-    });
-    if (!fs.ok) return null;
-    const fd = await fs.json();
-    return analyseGames(team.id, fd.response || [], 'soccer');
-  } catch { return null; }
-}
-
-/* ── unified game analyser ── */
-function analyseGames(teamId, games, type) {
-  if (!games.length) return null;
-  let wins=0, homeWins=0, homeGames=0, totalFor=0, totalAgainst=0, played=0;
-  games.forEach(g => {
-    let isHome, scored, conceded, won;
-    if (type === 'nba') {
-      isHome = g.home_team?.id === teamId;
-      scored = isHome ? g.home_team_score : g.visitor_team_score;
-      conceded = isHome ? g.visitor_team_score : g.home_team_score;
-      won = scored > conceded;
-    } else if (type === 'mlb') {
-      const ts = g.teams;
-      isHome = ts?.home?.team?.id === teamId;
-      scored = isHome ? ts?.home?.score : ts?.away?.score;
-      conceded = isHome ? ts?.away?.score : ts?.home?.score;
-      won = scored > conceded;
-    } else { // soccer
-      const teams = g.teams;
-      isHome = teams?.home?.id === teamId;
-      won = isHome ? teams?.home?.winner : teams?.away?.winner;
-      const goals = g.goals;
-      scored = isHome ? goals?.home : goals?.away;
-      conceded = isHome ? goals?.away : goals?.home;
-    }
-    if (scored == null || conceded == null) return;
-    played++;
-    if (won) wins++;
-    if (isHome) { homeGames++; if (won) homeWins++; }
-    totalFor += Number(scored)||0;
-    totalAgainst += Number(conceded)||0;
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', (i === 0 && tab === 'singles') || (i === 1 && tab === 'parlays'));
   });
-  if (!played) return null;
-  return {
-    formRatio: wins / played,
-    homeWinRate: homeGames ? homeWins / homeGames : wins / played,
-    avgFor: totalFor / played,
-    avgAgainst: totalAgainst / played,
-    played
-  };
+  document.getElementById('singlesPanel').style.display = tab === 'singles' ? 'block' : 'none';
+  document.getElementById('parlaysPanel').style.display = tab === 'parlays' ? 'block' : 'none';
 }
 
-/* ── extract best odds ── */
-function extractOdds(ev) {
-  let homeOdds=[], awayOdds=[], drawOdds=[];
-  (ev.bookmakers||[]).forEach(bm => {
-    (bm.markets||[]).forEach(mkt => {
-      if (mkt.key !== 'h2h') return;
-      (mkt.outcomes||[]).forEach(o => {
-        const p = parseFloat(o.price);
-        if (!p || p < 1.01) return;
-        const n = o.name?.toLowerCase();
-        if (n === ev.home_team?.toLowerCase()) homeOdds.push(p);
-        else if (n === ev.away_team?.toLowerCase()) awayOdds.push(p);
-        else drawOdds.push(p);
-      });
-    });
-  });
-  const avg = arr => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : null;
-  const best = arr => arr.length ? Math.min(...arr) : null; // best (lowest) for underdog detection
-  return {
-    homeAvg: avg(homeOdds), awayAvg: avg(awayOdds), drawAvg: avg(drawOdds),
-    homeBest: best(homeOdds), awayBest: best(awayOdds)
+// ─── Fetch fixtures from ESPN (free, no key) ──────────────────────────────
+async function fetchFixtures(sport) {
+  const endpoints = {
+    soccer_epl:     'https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard',
+    soccer_ucl:     'https://site.api.espn.com/apis/site/v2/sports/soccer/uefa.champions/scoreboard',
+    soccer_laliga:  'https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/scoreboard',
+    soccer_bundesliga: 'https://site.api.espn.com/apis/site/v2/sports/soccer/ger.1/scoreboard',
+    soccer_seriea:  'https://site.api.espn.com/apis/site/v2/sports/soccer/ita.1/scoreboard',
+    soccer_ligue1:  'https://site.api.espn.com/apis/site/v2/sports/soccer/fra.1/scoreboard',
+    basketball_nba: 'https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard',
+    baseball_mlb:   'https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard',
+    tennis:         null,
   };
-}
 
-/* ── composite probability model ── */
-function buildPick(ev, oddsData, homeHist, awayHist, meta) {
-  const { homeAvg, awayAvg, drawAvg } = oddsData;
-  if (!homeAvg || !awayAvg) return null;
+  const focus = document.getElementById('sportFocus').value;
+  const toFetch = focus === 'all'
+    ? Object.entries(endpoints).filter(([,v]) => v)
+    : Object.entries(endpoints).filter(([k,v]) => v && k.startsWith(focus));
 
-  // bookmaker implied probs
-  const rawHome = 1/homeAvg, rawAway = 1/awayAvg;
-  const rawDraw = drawAvg ? 1/drawAvg : 0;
-  const margin = rawHome + rawAway + rawDraw;
-  const bkHome = rawHome/margin, bkAway = rawAway/margin;
-
-  // historical model
-  let modelHome = bkHome, modelAway = bkAway;
-  if (homeHist && awayHist) {
-    const hForm = homeHist.formRatio;
-    const hHome = homeHist.homeWinRate;
-    const aForm = awayHist.formRatio;
-    const hScore = (homeHist.avgFor - homeHist.avgAgainst);
-    const aScore = (awayHist.avgFor - awayHist.avgAgainst);
-    const scoreDiff = hScore - aScore;
-    const scoreFactor = 0.5 + Math.min(Math.max(scoreDiff / 3, -0.3), 0.3);
-
-    // weighted composite
-    const rawModelHome = hForm*0.40 + hHome*0.35 + scoreFactor*0.15 + bkHome*0.10;
-    const rawModelAway = aForm*0.40 + awayHist.homeWinRate*0.35 + (1-scoreFactor)*0.15 + bkAway*0.10;
-    const total = rawModelHome + rawModelAway;
-    modelHome = rawModelHome / total;
-    modelAway = rawModelAway / total;
-  }
-
-  // pick best value side
-  let pick, pickOdds, confidence, selection;
-  const homeVal = modelHome - bkHome;
-  const awayVal = modelAway - bkAway;
-
-  if (homeVal >= awayVal) {
-    pick = 'home'; selection = ev.home_team + ' to Win';
-    pickOdds = homeAvg; confidence = Math.round(modelHome * 100);
-  } else {
-    pick = 'away'; selection = ev.away_team + ' to Win';
-    pickOdds = awayAvg; confidence = Math.round(modelAway * 100);
-  }
-
-  return {
-    id: ev.id,
-    sport: meta.sport,
-    label: meta.label,
-    match: `${ev.home_team} vs ${ev.away_team}`,
-    selection, pickOdds, confidence,
-    homeHist, awayHist, bkHome, bkAway, modelHome, modelAway,
-    commenceTime: ev.commence_time
-  };
-}
-
-/* ── main fetch ── */
-async function loadLive() {
-  const oddsKey = document.getElementById('oddsKey').value.trim();
-  const fbKey = document.getElementById('fbKey').value.trim();
-  if (!oddsKey) { setStatus('Enter your Odds API key first.', 'error'); return; }
-
-  localStorage.setItem('betiq_odds_key', oddsKey);
-  if (fbKey) localStorage.setItem('betiq_fb_key', fbKey);
-
-  allPicks = [];
-  document.getElementById('picks').innerHTML = '';
-  document.getElementById('parlayResult').innerHTML = '';
-
-  const now = Date.now();
-  const cutoff = now + 48*3600*1000;
-
-  for (const sp of SPORTS) {
-    setStatus(`Fetching odds: ${sp.label}…`);
+  const fixtures = [];
+  for (const [league, url] of toFetch) {
     try {
-      const url = `https://api.the-odds-api.com/v4/sports/${sp.key}/odds/?apiKey=${oddsKey}&regions=eu&markets=h2h&oddsFormat=decimal`;
-      const r = await fetchTimeout(url, {}, 8000);
+      const r = await fetch(url);
       if (!r.ok) continue;
-      const events = await r.json();
-
-      const upcoming = (Array.isArray(events) ? events : []).filter(ev => {
-        const t = new Date(ev.commence_time).getTime();
-        return t > now && t < cutoff;
-      });
-
-      for (const ev of upcoming) {
-        const oddsData = extractOdds(ev);
-        if (!oddsData.homeAvg || !oddsData.awayAvg) continue;
-
-        let homeHist = null, awayHist = null;
-        if (sp.sport === 'basketball') {
-          [homeHist, awayHist] = await Promise.all([
-            fetchNBA(ev.home_team), fetchNBA(ev.away_team)
-          ]);
-        } else if (sp.sport === 'baseball') {
-          [homeHist, awayHist] = await Promise.all([
-            fetchMLB(ev.home_team), fetchMLB(ev.away_team)
-          ]);
-        } else if (sp.sport === 'soccer' && fbKey) {
-          [homeHist, awayHist] = await Promise.all([
-            fetchSoccer(fbKey, ev.home_team, sp.leagueId),
-            fetchSoccer(fbKey, ev.away_team, sp.leagueId)
-          ]);
-        }
-
-        const pick = buildPick(ev, oddsData, homeHist, awayHist, sp);
-        if (pick) allPicks.push(pick);
+      const data = await r.json();
+      const events = data.events || [];
+      for (const ev of events) {
+        const comps = ev.competitions?.[0];
+        if (!comps) continue;
+        const status = comps.status?.type?.name;
+        // Only upcoming games
+        if (status === 'STATUS_FINAL' || status === 'STATUS_IN_PROGRESS') continue;
+        const teams = comps.competitors || [];
+        if (teams.length < 2) continue;
+        const home = teams.find(t => t.homeAway === 'home');
+        const away = teams.find(t => t.homeAway === 'away');
+        if (!home || !away) continue;
+        fixtures.push({
+          league: league.replace(/_/g, ' ').toUpperCase(),
+          sport: league.startsWith('soccer') ? 'soccer' : league.startsWith('basketball') ? 'basketball' : 'baseball',
+          home: home.team?.displayName || home.team?.name,
+          away: away.team?.displayName || away.team?.name,
+          homeRecord: home.records?.[0]?.summary || '',
+          awayRecord: away.records?.[0]?.summary || '',
+          date: ev.date,
+        });
       }
-    } catch(e) {
-      console.warn(sp.label, e.message);
+    } catch(e) { console.warn(league, e.message); }
+  }
+  return fixtures;
+}
+
+// ─── Call Claude API ──────────────────────────────────────────────────────────
+async function callClaude(apiKey, fixtures, targetOdds, minConf) {
+  const fixtureText = fixtures.slice(0, 20).map((f, i) =>
+    `${i+1}. [${f.league}] ${f.home} (${f.homeRecord}) vs ${f.away} (${f.awayRecord})`
+  ).join('\n');
+
+  const prompt = `You are an expert sports betting analyst for Stake.com. Analyze these upcoming fixtures and provide betting recommendations.
+
+UPCOMING FIXTURES:
+${fixtureText}
+
+USER TARGET: They want bets around ${targetOdds} odds, minimum ${minConf}% confidence.
+
+For each game you pick, analyze these Stake.com betting markets:
+- Match Winner (1X2)
+- Both Teams to Score (Yes/No)
+- Over/Under 2.5 Goals
+- Asian Handicap
+- Double Chance
+- Draw No Bet
+- First Half Winner
+
+For each recommended bet, estimate realistic odds based on team strength and current form.
+
+IMPORTANT RULES:
+- Base picks on actual team form, head-to-head records, home/away performance, injuries, league position
+- Do NOT just pick favorites — find VALUE bets
+- Be honest about confidence — if uncertain, say so
+- For parlays, combine picks from DIFFERENT games only
+
+Respond ONLY with a valid JSON object in this exact format:
+{
+  "singles": [
+    {
+      "league": "PREMIER LEAGUE",
+      "sport": "soccer",
+      "match": "Team A vs Team B",
+      "market": "Over 2.5 Goals",
+      "selection": "Over 2.5 Goals",
+      "odds": 1.75,
+      "confidence": 78,
+      "reasoning": "2-3 sentence explanation based on form/stats"
     }
+  ],
+  "parlays": [
+    {
+      "name": "Safe Double",
+      "legs": [
+        {
+          "match": "Team A vs Team B",
+          "market": "Match Winner",
+          "selection": "Team A to Win",
+          "odds": 1.65
+        },
+        {
+          "match": "Team C vs Team D",
+          "market": "Both Teams to Score",
+          "selection": "BTTS Yes",
+          "odds": 1.72
+        }
+      ],
+      "totalOdds": 2.84,
+      "confidence": 62,
+      "reasoning": "Why this parlay makes sense"
+    }
+  ],
+  "summary": "Brief 1-2 line summary of today's betting landscape"
+}
+
+Provide 5-8 singles and 3-4 parlays (2-leg, 3-leg, and one 4-leg). Make sure at least some singles are near the target odds of ${targetOdds}.`;
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-opus-4-5',
+      max_tokens: 3000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error?.message || `API error ${response.status}`);
   }
 
-  if (!allPicks.length) {
-    setStatus('No upcoming games found in next 48 hours for selected sports.', 'info');
+  const data = await response.json();
+  const text = data.content?.[0]?.text || '';
+
+  // Extract JSON from response
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) throw new Error('Claude returned invalid format');
+  return JSON.parse(jsonMatch[0]);
+}
+
+// ─── Main analysis ────────────────────────────────────────────────────────────
+async function runAnalysis() {
+  const apiKey = document.getElementById('claudeKey').value.trim();
+  if (!apiKey) { setStatus('Enter your Anthropic API key first.', 'error'); return; }
+
+  localStorage.setItem('betiq_claude_key', apiKey);
+
+  const btn = document.getElementById('analyzeBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Analyzing…';
+  hideStatus();
+  document.getElementById('resultsTabs').style.display = 'none';
+  document.getElementById('stakeNote').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'none';
+
+  const targetOdds = parseFloat(document.getElementById('targetOdds').value) || 2.0;
+  const minConf = parseInt(document.getElementById('minConf').value) || 70;
+
+  try {
+    setThinking('Fetching today\'s fixtures from ESPN…');
+    const fixtures = await fetchFixtures();
+
+    if (!fixtures.length) {
+      hideThinking();
+      setStatus('No upcoming fixtures found today. Try again tomorrow or check ESPN for scheduled games.', 'info');
+      btn.disabled = false; btn.textContent = '🤖 Analyze & Get Picks';
+      return;
+    }
+
+    setThinking(`Found ${fixtures.length} upcoming games. Claude AI is analyzing all markets…`);
+    const result = await callClaude(apiKey, fixtures, targetOdds, minConf);
+    hideThinking();
+
+    lastResult = result;
+
+    // Filter by confidence
+    result.singles = (result.singles || []).filter(p => p.confidence >= minConf);
+    result.parlays = (result.parlays || []).filter(p => p.confidence >= (minConf - 15));
+
+    if (!result.singles.length && !result.parlays.length) {
+      document.getElementById('emptyState').style.display = 'block';
+      setStatus('Analysis complete but no picks met your confidence threshold. Try lowering it.', 'info');
+    } else {
+      renderResults(result, targetOdds);
+      document.getElementById('resultsTabs').style.display = 'block';
+      document.getElementById('stakeNote').style.display = 'block';
+      if (result.summary) setStatus('💡 ' + result.summary, 'ok');
+    }
+
+  } catch(e) {
+    hideThinking();
+    setStatus('Error: ' + e.message, 'error');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '🤖 Analyze & Get Picks';
+}
+
+// ─── Render ───────────────────────────────────────────────────────────────────
+function renderResults(result, targetOdds) {
+  // SINGLES
+  const singles = result.singles || [];
+  const singlesGrid = document.getElementById('singlesGrid');
+
+  if (!singles.length) {
+    singlesGrid.innerHTML = '<div class="empty">No singles found for your target.</div>';
   } else {
-    setStatus(`✅ Found ${allPicks.length} picks. Showing filtered results below.`, 'ok');
-  }
-  render();
-}
-
-/* ── render picks ── */
-function render() {
-  const sport = document.getElementById('filterSport').value;
-  const minO = parseFloat(document.getElementById('minOdds').value)||1.5;
-  const maxO = parseFloat(document.getElementById('maxOdds').value)||2.0;
-  const minC = parseFloat(document.getElementById('minConf').value)||70;
-
-  let filtered = allPicks.filter(p =>
-    (sport === 'all' || p.sport === sport) &&
-    p.pickOdds >= minO && p.pickOdds <= maxO &&
-    p.confidence >= minC
-  );
-  filtered.sort((a,b) => b.confidence - a.confidence);
-
-  const container = document.getElementById('picks');
-  if (!filtered.length) {
-    container.innerHTML = '<div class="empty">No picks match your filters yet. Load live picks or adjust filters.</div>';
-    return;
-  }
-
-  container.innerHTML = filtered.map(p => {
-    const tier = p.confidence >= 80 ? 'high' : p.confidence >= 70 ? 'med' : 'low';
-    const cardTier = tier === 'high' ? '' : tier;
-    const dt = new Date(p.commenceTime).toLocaleString();
-    const hh = p.homeHist, ah = p.awayHist;
-    const detailHtml = `
-      <div class="pick-detail" id="det_${p.id}">
-        <div class="detail-grid">
-          <div class="detail-item"><div class="d-label">Match Time</div><div class="d-val" style="font-size:0.8rem">${dt}</div></div>
-          <div class="detail-item"><div class="d-label">Book Prob Home</div><div class="d-val">${Math.round(p.bkHome*100)}%</div></div>
-          <div class="detail-item"><div class="d-label">Book Prob Away</div><div class="d-val">${Math.round(p.bkAway*100)}%</div></div>
-          <div class="detail-item"><div class="d-label">Model Prob Home</div><div class="d-val">${Math.round(p.modelHome*100)}%</div></div>
-          <div class="detail-item"><div class="d-label">Model Prob Away</div><div class="d-val">${Math.round(p.modelAway*100)}%</div></div>
-          ${hh ? `<div class="detail-item"><div class="d-label">Home Form (W%)</div><div class="d-val">${Math.round(hh.formRatio*100)}%</div></div>` : ''}
-          ${ah ? `<div class="detail-item"><div class="d-label">Away Form (W%)</div><div class="d-val">${Math.round(ah.formRatio*100)}%</div></div>` : ''}
-          ${hh ? `<div class="detail-item"><div class="d-label">Home Win Rate (H)</div><div class="d-val">${Math.round(hh.homeWinRate*100)}%</div></div>` : ''}
-          ${hh ? `<div class="detail-item"><div class="d-label">Avg Scored</div><div class="d-val">${hh.avgFor?.toFixed(1)} / ${hh.avgAgainst?.toFixed(1)}</div></div>` : ''}
-        </div>
-      </div>`;
-    return `
-      <div class="pick-card ${cardTier}" onclick="toggleDetail('${p.id}')">
-        <div class="pick-header">
-          <div class="pick-left">
-            <div class="pick-sport">${p.label}</div>
-            <div class="pick-match">${p.match}</div>
-            <div class="pick-sel">✅ ${p.selection}</div>
+    singlesGrid.innerHTML = singles.map(p => {
+      const tier = p.confidence >= 80 ? 'high' : p.confidence >= 70 ? 'med' : 'low';
+      const cardClass = tier === 'high' ? '' : tier;
+      const oddsClose = Math.abs(p.odds - targetOdds) < 0.3 ? '🎯 ' : '';
+      return `
+        <div class="pick-card ${cardClass}">
+          <div class="pick-header">
+            <div class="pick-left">
+              <div class="pick-sport">${p.league || p.sport}</div>
+              <div class="pick-match">${p.match}</div>
+              <div class="pick-market">
+                <span class="market-tag">${p.market}</span>
+                ${oddsClose}<strong>${p.selection}</strong>
+              </div>
+              <div class="pick-reason">${p.reasoning}</div>
+            </div>
+            <div class="pick-right">
+              <div class="conf-pct ${tier}">${p.confidence}%</div>
+              <div class="conf-label">confidence</div>
+              <div class="odds-badge">× ${parseFloat(p.odds).toFixed(2)}</div>
+            </div>
           </div>
-          <div class="pick-right">
-            <div class="conf-ring ${tier}">${p.confidence}%</div>
-            <div class="odds-tag">× ${p.pickOdds.toFixed(2)}</div>
+        </div>`;
+    }).join('');
+  }
+
+  // PARLAYS
+  const parlays = result.parlays || [];
+  const parlaysGrid = document.getElementById('parlaysGrid');
+
+  if (!parlays.length) {
+    parlaysGrid.innerHTML = '<div class="empty">No parlays built.</div>';
+  } else {
+    parlaysGrid.innerHTML = parlays.map((par, i) => {
+      const legCount = par.legs?.length || 0;
+      const legsHtml = (par.legs || []).map(leg => `
+        <div class="parlay-leg">
+          <div class="leg-info">
+            <div class="leg-match">${leg.match}</div>
+            <div class="leg-market">${leg.market} · ${leg.selection}</div>
           </div>
-        </div>
-        ${detailHtml}
-      </div>`;
-  }).join('');
+          <div class="leg-odds-val">× ${parseFloat(leg.odds).toFixed(2)}</div>
+        </div>`).join('');
+
+      return `
+        <div class="parlay-card">
+          <div class="parlay-header">
+            <div class="parlay-name">🎰 ${par.name || `Parlay ${i+1}`} · ${legCount} legs</div>
+            <div class="parlay-meta">
+              <div class="parlay-odds">× ${parseFloat(par.totalOdds).toFixed(2)}</div>
+              <div class="parlay-conf">${par.confidence}% conf</div>
+            </div>
+          </div>
+          <div class="parlay-legs">${legsHtml}</div>
+          ${par.reasoning ? `<div class="parlay-footer">💡 ${par.reasoning}</div>` : ''}
+        </div>`;
+    }).join('');
+  }
 }
 
-function toggleDetail(id) {
-  const el = document.getElementById('det_' + id);
-  if (el) el.classList.toggle('open');
-}
-
-/* ── target parlay builder ── */
-function buildTarget() {
-  const target = parseFloat(document.getElementById('targetOdds').value)||5.0;
-  const maxLegs = parseInt(document.getElementById('maxLegs').value)||4;
-
-  if (!allPicks.length) {
-    document.getElementById('parlayResult').innerHTML = '<p style="color:var(--muted);font-size:0.85rem">Load live picks first.</p>';
-    return;
-  }
-
-  // sort by confidence desc, pick best value bets
-  const pool = [...allPicks].sort((a,b) => b.confidence - a.confidence);
-  const legs = [];
-  let accumulated = 1.0;
-
-  for (const p of pool) {
-    if (legs.length >= maxLegs) break;
-    if (accumulated >= target) break;
-    if (p.pickOdds < 1.3) continue; // skip very short odds
-    legs.push(p);
-    accumulated *= p.pickOdds;
-  }
-
-  if (!legs.length) {
-    document.getElementById('parlayResult').innerHTML = '<p style="color:var(--muted);font-size:0.85rem">Not enough picks to build parlay. Adjust filters or load picks.</p>';
-    return;
-  }
-
-  const combinedConf = legs.reduce((acc, p) => acc * (p.confidence/100), 1);
-  const legsHtml = legs.map(p => `
-    <div class="parlay-leg">
-      <div>
-        <div class="leg-match">${p.match}</div>
-        <div class="leg-sel">${p.selection} — ${p.confidence}% conf</div>
-      </div>
-      <div class="leg-odds">× ${p.pickOdds.toFixed(2)}</div>
-    </div>`).join('');
-
-  document.getElementById('parlayResult').innerHTML = `
-    <div class="parlay-legs">${legsHtml}</div>
-    <div class="parlay-total">
-      <div><div class="pt-label">Total Odds</div><div class="pt-val">× ${accumulated.toFixed(2)}</div></div>
-      <div><div class="pt-label">Combined Confidence</div><div class="pt-val">${Math.round(combinedConf*100)}%</div></div>
-      <div><div class="pt-label">Legs</div><div class="pt-val">${legs.length}</div></div>
-    </div>`;
-}
-
-/* ── boot: restore saved keys ── */
+// ─── Boot ─────────────────────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', () => {
-  const k = localStorage.getItem('betiq_odds_key');
-  const f = localStorage.getItem('betiq_fb_key');
-  if (k) document.getElementById('oddsKey').value = k;
-  if (f) document.getElementById('fbKey').value = f;
-  if (k) loadLive();
+  const k = localStorage.getItem('betiq_claude_key');
+  if (k) document.getElementById('claudeKey').value = k;
 });
 </script>
 </body>
